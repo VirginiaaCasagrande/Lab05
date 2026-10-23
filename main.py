@@ -36,6 +36,14 @@ def main(page: ft.Page):
     lista_strumenti = ft.ListView(expand=True, spacing=5, padding=10, auto_scroll=True)
 
     # Tutti i TextField per le info necessarie per aggiungere un nuovo strumento (tipo, marca, anno, contatore posti)
+
+    input_tipo=ft.TextField(label="Tipo")
+    input_marca=ft.TextField(label="Marca")
+    input_anno=ft.TextField(label="Anno di acquisto")
+
+    input_valore=ft.TextField(value="0")
+
+
     # TODO
 
     # --- FUNZIONI APP ---
@@ -55,6 +63,16 @@ def main(page: ft.Page):
         txt_responsabile.value = f"Responsabile: {deposito.get_responsabile()}"
 
     # Handlers per la gestione dei pulsanti utili all'inserimento di un nuovo strumento
+    def incrementa_valore(e):
+        valore_corrente = int(input_valore.value)
+        input_valore.value = str(valore_corrente + 1)
+        input_valore.update()
+
+    def decrementa_valore(e):
+        valore_corrente=int(input_valore.value)
+        input_valore.value = str(valore_corrente - 1)
+        input_valore.update()
+
     # TODO
 
     # --- EVENTI ---
@@ -62,6 +80,11 @@ def main(page: ft.Page):
     pulsante_conferma_responsabile = ft.Button("Conferma", on_click=conferma_responsabile)
 
     # Pulsanti per la gestione dell'inserimento di un nuovo strumento
+    button_piu = ft.IconButton(icon=ft.Icons.ADD, on_click=incrementa_valore)
+    button_meno = ft.IconButton(icon=ft.Icons.REMOVE, on_click=decrementa_valore)
+
+
+
     # TODO
 
     # --- LAYOUT ---
@@ -80,6 +103,11 @@ def main(page: ft.Page):
                alignment=ft.MainAxisAlignment.CENTER),
 
         # Sezione 3
+        ft.Text('Aggiungi Nuovo Sturmento', size=20),
+        ft.Row(spacing=200,
+               controls=[button_meno,input_valore, button_piu, ft.Text("€")],
+               alignment=ft.MainAxisAlignment.CENTER),
+
         # TODO
 
         # Sezione 4
