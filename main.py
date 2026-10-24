@@ -37,9 +37,9 @@ def main(page: ft.Page):
 
     # Tutti i TextField per le info necessarie per aggiungere un nuovo strumento (tipo, marca, anno, contatore posti)
 
-    input_tipo=ft.TextField(label="Tipo")
-    input_marca=ft.TextField(label="Marca")
-    input_anno=ft.TextField(label="Anno di acquisto")
+    input_tipo=ft.TextField(label="Tipo")   #crea casella in cui scrivere il tipo di strumento
+    input_marca=ft.TextField(label="Marca")  #crea casella in cui scrivere la marca dello strumento
+    input_anno=ft.TextField(label="Anno di acquisto")  #crea casella in cui scrivere l'anno di acquisto dello strumento
 
     input_valore=ft.TextField(value="0")
 
@@ -64,14 +64,65 @@ def main(page: ft.Page):
 
     # Handlers per la gestione dei pulsanti utili all'inserimento di un nuovo strumento
     def incrementa_valore(e):
-        valore_corrente = int(input_valore.value)
+        try:
+            valore_corrente=float(input_valore.value)
+        except ValueError:
+            alert.show_alert('Inserire un valore numerico')
+            return
         input_valore.value = str(valore_corrente + 1)
         input_valore.update()
 
     def decrementa_valore(e):
-        valore_corrente=int(input_valore.value)
-        input_valore.value = str(valore_corrente - 1)
+        try:
+            valore_corrente=float(input_valore.value)
+        except ValueError:
+            alert.show_alert('Inserire un valore numerico')
+            return
+        if valore_corrente>0:
+            input_valore.value = str(valore_corrente - 1)
         input_valore.update()
+
+    def aggiungi_strumento(e):
+        tipo=input_tipo.value.strip()  #variabile che contiene ill tipo inserito dall'utente
+        marca=input_marca.value.strip() #variabile che contiene la marca inserita dall'utente
+        anno=input_anno.value.strip()  #variabile che contiene l'anno inserito dall'utente
+
+        #Controllo che i campi inseriti siano validi
+        if not tipo or not marca or not anno:
+            alert.show_alert('Tutti i campi devono essere compilati')
+            return
+
+        try:
+            anno_acquisto=int(anno)
+        except ValueError:
+            alert.show_alert('L\'anno deve essere un numero intero')
+            return
+
+        if anno_acquisto<=0:
+            alert.show_alert('L\'anno deve essere un numero positivo')
+            return
+
+        try:
+            valore = float(input_valore.value.strip())# variabile che contiene il valore dello strumento presa dal contatore
+        except ValueError:
+            alert.show_alert('Il valore deve essere un numero')
+            return
+        if valore<=0:
+            alert.show_alert('Il valore dello strumento deve essere maggiore di 0')
+            return
+
+        #Aggiunta dello strumento al deposito
+        deposito.aggiungi_strumento(tipo, marca, anno_acquisto, valore)
+
+        #Svuotamento dei campi
+        input_tipo.value=''
+        input_marca.value=''
+        input_anno.value=''
+        input_valore.value='0'
+
+        #Aggiornamento della schermata
+        aggiorna_lista_strumenti()
+        page.update()
 
     # TODO
 
@@ -80,8 +131,9 @@ def main(page: ft.Page):
     pulsante_conferma_responsabile = ft.Button("Conferma", on_click=conferma_responsabile)
 
     # Pulsanti per la gestione dell'inserimento di un nuovo strumento
-    button_piu = ft.IconButton(icon=ft.Icons.ADD, on_click=incrementa_valore)
-    button_meno = ft.IconButton(icon=ft.Icons.REMOVE, on_click=decrementa_valore)
+    pulsante_piu = ft.IconButton(icon=ft.Icons.ADD, on_click=incrementa_valore)
+    pulsante_meno = ft.IconButton(icon=ft.Icons.REMOVE, on_click=decrementa_valore)
+    pulsante_aggiungi_strumento = ft.Button ('Aggiungi strumento', on_click=aggiungi_strumento)
 
 
 
@@ -103,10 +155,14 @@ def main(page: ft.Page):
                alignment=ft.MainAxisAlignment.CENTER),
 
         # Sezione 3
-        ft.Text('Aggiungi Nuovo Sturmento', size=20),
+        ft.Text('Aggiungi Nuovo Strumento', size=20),
+        ft.Row(controls=[input_tipo, input_marca, input_anno], alignment=ft.MainAxisAlignment.CENTER),
+
         ft.Row(spacing=200,
-               controls=[button_meno,input_valore, button_piu, ft.Text("€")],
+               controls=[pulsante_meno,input_valore, pulsante_piu, ft.Text("€")],
                alignment=ft.MainAxisAlignment.CENTER),
+
+        pulsante_aggiungi_strumento,
 
         # TODO
 
